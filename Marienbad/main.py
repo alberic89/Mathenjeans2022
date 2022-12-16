@@ -1,14 +1,13 @@
-#!/bin/env/python3
+#!/usr/bin/env pypy3
 
 from itertools import combinations_with_replacement
 
 def main():
 	number = list(range(1,10))
-	for row in range(1,10):
+	for row in range(1,100):
 		temp = combinations_with_replacement(number, row)
 		for i in list(temp):
-			if isGood(i) :
-				print(i)
+			if isGood(i) : print(i)
 
 def isGood(combinations):
 	somme = 0
