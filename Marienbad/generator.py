@@ -122,7 +122,14 @@ def launchGUI(input_arg: tuple) -> None:
 			result.delete("1.0", "end"),
 			result.insert(
 				"1.0",
-				mainGUI((False, int(jetons_spin.get()), int(tas_spin.get()), tas_fixe)),
+				mainGUI(
+					(
+						False,
+						int(jetons_spin.get()),
+						int(tas_spin.get()),
+						tas_fixe,
+					)
+				),
 			),
 		],
 	)
