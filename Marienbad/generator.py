@@ -24,18 +24,26 @@
 
 import os, sys
 from itertools import combinations_with_replacement
-from tkinter import *
-from tkinter import simpledialog
+
+if os.path.os.environ.get("DISPLAY") != None:
+	from tkinter import *
+	from tkinter import simpledialog
 
 
-def generateTable(nbjetons: int, nbtas: int) -> tuple:
+def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> tuple:
 	result = []
 	number = list(range(1, nbjetons + 1))
-	for row in range(1, nbtas + 1):
-		temp = combinations_with_replacement(number, row)
+	if tas_fixe:
+		temp = combinations_with_replacement(number, nbtas)
 		for i in list(temp):
 			if checkCombination(list(i)):
 				result.append(i)
+	else:
+		for row in range(1, nbtas + 1):
+			temp = combinations_with_replacement(number, row)
+			for i in list(temp):
+				if checkCombination(list(i)):
+					result.append(i)
 	return result
 
 
@@ -65,7 +73,7 @@ def mainCLI(arg: tuple) -> None:
 		nb_tas = int(input("Nombre maximal de tas : "))
 	else:
 		nb_tas = arg[2]
-	out = generateTable(nb_jetons, nb_tas)
+	out = generateTable(nb_jetons, nb_tas, arg[3])
 	for i in out:
 		print(i)
 
@@ -75,6 +83,8 @@ def launchGUI(input_arg: tuple) -> None:
 	ROOT.title("Marienbad Generator")
 	window_width = 660
 	window_height = 495
+
+	tas_fixe = BooleanVar()
 
 	# get the screen dimension
 	screen_width = ROOT.winfo_screenwidth()
@@ -98,12 +108,23 @@ def launchGUI(input_arg: tuple) -> None:
 	jetons_spin = Spinbox(ROOT, from_=1.0, to=1000, increment=1.0)
 	tas_lbl = Label(ROOT, text="Nombre de tas de jetons maximum :")
 	tas_spin = Spinbox(ROOT, from_=1.0, to=1000, increment=1.0)
+	fixe_check = Checkbutton(
+		ROOT,
+		text="Nombre de tas fixe",
+		variable=tas_fixe,
+		onvalue=True,
+		offvalue=False,
+	)
 	button = Button(
 		ROOT,
 		text="Launch",
-		command=lambda: [result.delete("1.0","end"),result.insert(
-			"1.0", mainGUI((False, int(jetons_spin.get()), int(tas_spin.get())))
-		)],
+		command=lambda: [
+			result.delete("1.0", "end"),
+			result.insert(
+				"1.0",
+				mainGUI((False, int(jetons_spin.get()), int(tas_spin.get()), tas_fixe)),
+			),
+		],
 	)
 	result = Text(ROOT)
 	s = Scrollbar(ROOT, orient=VERTICAL, command=result.yview)
@@ -113,15 +134,16 @@ def launchGUI(input_arg: tuple) -> None:
 	jetons_spin.grid(column=1, row=0, sticky=(W))
 	tas_lbl.grid(column=0, row=1, sticky=(E), pady=5)
 	tas_spin.grid(column=1, row=1, sticky=(W))
-	button.grid(column=0, row=2, columnspan=2, pady=5)
+	fixe_check.grid(column=0, row=2)
+	button.grid(column=1, row=2, pady=5, sticky=(W))
 	result.grid(column=0, row=3, columnspan=2, sticky=(N, W, E, S))
 	s.grid(column=3, row=3, sticky=(N, S))
 
 	if input_arg[1] != None:
-		jetons_spin.delete("0","end")
+		jetons_spin.delete("0", "end")
 		jetons_spin.insert("0", input_arg[1])
 	if input_arg[2] != None:
-		tas_spin.delete("0","end")
+		tas_spin.delete("0", "end")
 		tas_spin.insert("0", input_arg[2])
 
 	mainloop()
@@ -136,7 +158,7 @@ def mainGUI(arg: tuple) -> str:
 		nb_tas = setInputTas()
 	else:
 		nb_tas = arg[2]
-	out = generateTable(nb_jetons, nb_tas)
+	out = generateTable(nb_jetons, nb_tas, arg[3])
 	msg = ""
 	for i in out:
 		msg += str(i) + "\n"
@@ -144,7 +166,7 @@ def mainGUI(arg: tuple) -> str:
 
 
 def findArguments() -> list:
-	arg = [False, None, None]
+	arg = [False, None, None, False]
 	if "--help" in sys.argv or "-h" in sys.argv:
 		print(
 			f"""Utilisation : {sys.argv[0]} [OPTIONS]...
@@ -156,19 +178,23 @@ Options :
   -h,   --help    Affiche l'aide.
   -jN             Utilise N jetons au maximum par tas.
   -tN             Utilise N tas de jetons au maximum.
+  -f              Ne génère que les combinaisons où le
+		  nombre de tas correspond avec le nombre
+		  de tas maximum.
 	--no-gui  Lance la version en ligne de commande.
 		  Par défaut, si une interface graphique
 		  est disponible, elle sera utilisée.
 		  Cette option force l'usage du terminal.
 
 Exemples :
-  {sys.argv[0]} -j5 -t7
+  {sys.argv[0]} -j5 -t7 -f
   {sys.argv[0]} -t3 --no-gui -j12
   {sys.argv[0]} -j28"""
 		)
 		exit()
-	elif len(sys.argv) > 4:
+	elif len(sys.argv) > 5:
 		print("Trop d'arguments")
+		raise ValueError("Trop d'arguments")
 		exit()
 	for i in range(1, len(sys.argv)):
 		if sys.argv[i] == "--no-gui":
@@ -177,9 +203,11 @@ Exemples :
 			arg[1] = int(sys.argv[i][2:])
 		elif sys.argv[i].find("-t") == 0:
 			arg[2] = int(sys.argv[i][2:])
+		elif sys.argv[i].find("-f") == 0:
+			arg[3] = True
 		else:
 			print("Ho ho ! Entrée illégale !")
-			exit()
+			raise ValueError("Entrée illégale !")
 	return arg
 
 
