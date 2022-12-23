@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 #  generator.py
 #
 #  Copyright 2022 alberic89 <alberic89@gmx.com>
@@ -21,11 +20,10 @@
 #  MA 02110-1301, USA.
 #
 
-
 import os, sys
 from itertools import combinations_with_replacement
 
-if os.path.os.environ.get("DISPLAY") != None and __name__ == "__main__":
+if (os.path.os.environ.get("DISPLAY") != None) and (__name__ == "__main__"):
 	from tkinter import *
 	from tkinter import simpledialog
 
@@ -89,6 +87,7 @@ def launchGUI(input_arg: tuple) -> None:
 	window_height = 495
 
 	tas_fixe = BooleanVar()
+	tas_fixe.set(input_arg[3])
 
 	# get the screen dimension
 	screen_width = ROOT.winfo_screenwidth()
@@ -131,7 +130,7 @@ def launchGUI(input_arg: tuple) -> None:
 						False,
 						int(jetons_spin.get()),
 						int(tas_spin.get()),
-						tas_fixe,
+						tas_fixe.get(),
 					)
 				),
 			),
@@ -214,7 +213,7 @@ Exemples :
 			arg[1] = int(sys.argv[i][2:])
 		elif sys.argv[i].find("-t") == 0:
 			arg[2] = int(sys.argv[i][2:])
-		elif sys.argv[i].find("-f") == 0:
+		elif sys.argv[i] == "-f":
 			arg[3] = True
 		else:
 			print("Ho ho ! Entrée illégale !")
