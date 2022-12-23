@@ -25,12 +25,16 @@
 import os, sys
 from itertools import combinations_with_replacement
 
-if os.path.os.environ.get("DISPLAY") != None:
+if os.path.os.environ.get("DISPLAY") != None and __name__ == "__main__":
 	from tkinter import *
 	from tkinter import simpledialog
 
 
 def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> tuple:
+	"""Génère des situations gagnantes à partir de l'entrée donnée.
+	Usage : generateTable(int:Nombre de jetons maximum par pile, int:nombre
+	de piles maximum, Boolean:(optionel) Génèrer que les combinaisons où
+	le nombre de tas correspond avec le nombre de tas maximum."""
 	result = []
 	number = list(range(1, nbjetons + 1))
 	if tas_fixe:
