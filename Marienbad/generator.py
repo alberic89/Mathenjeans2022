@@ -66,6 +66,17 @@ def checkCombination(liste: list) -> bool:
 	return ok
 
 
+def generateFile(nbjetons: int, nbtas: int) -> None:
+	file = open("out.txt", "w")
+	number = list(range(1, nbjetons + 1))
+	for row in range(1, nbtas + 1):
+		temp = combinations_with_replacement(number, row)
+		for i in list(temp):
+			if checkCombination(list(i)):
+				file.write(str(i) + "\n")
+	file.close()
+
+
 def mainCLI(arg: tuple) -> None:
 	if arg[1] == None:
 		nb_jetons = int(input("Nombre maximal de jetons par tas : "))
