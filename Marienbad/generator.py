@@ -30,7 +30,7 @@ if (os.path.os.environ.get("DISPLAY") != None) and (__name__ == "__main__"):
 
 
 def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> tuple:
-	"""Génère des situations gagnantes à partir de l'entrée donnée. """
+	"""Génère des situations gagnantes à partir de l'entrée donnée."""
 	"""Usage : generateTable(int:Nombre de jetons maximum par pile, int:nombre """
 	"""de piles maximum, Boolean:(optionel) Génèrer que les combinaisons où """
 	"""le nombre de tas correspond avec le nombre de tas maximum."""
@@ -39,21 +39,21 @@ def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> tuple:
 	if tas_fixe:
 		# Génère toutes les combinaisons possibles
 		temp = combinations_with_replacement(number, nbtas)
-		for i in list(temp): # Teste les combinaisons
+		for i in list(temp):  # Teste les combinaisons
 			if checkCombination(list(i)):
 				result.append(i)
 	else:
 		for row in range(1, nbtas + 1):
 			# Génère toutes les combinaisons possibles
 			temp = combinations_with_replacement(number, row)
-			for i in list(temp):# Teste les combinaisons
+			for i in list(temp):  # Teste les combinaisons
 				if checkCombination(list(i)):
 					result.append(i)
 	return result
 
 
 def checkCombination(liste: list) -> bool:
-	"""Vérifie la combinaison en transormant chaque élément de la liste """
+	"""Vérifie la combinaison en transormant chaque élément de la liste"""
 	"""en son équivalent binaire, puis en faisant la somme de chaque colonne """
 	ok = True
 	# Trouve la taille de l'élément le plus long
@@ -75,7 +75,7 @@ def checkCombination(liste: list) -> bool:
 
 
 def generateFile(nbjetons: int, nbtas: int, nom_fichier="out.txt") -> None:
-	"""Pareil que generateTable(), mais écrit la sortie dans le fichier """
+	"""Pareil que generateTable(), mais écrit la sortie dans le fichier"""
 	"""indiqué par nom_fichier. Pas d'option tas_fixe !"""
 	file = open(nom_fichier, "w")
 	number = list(range(1, nbjetons + 1))
