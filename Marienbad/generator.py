@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#
 #  generator.py
 #
 #  Copyright 2022 alberic89 <alberic89@gmx.com>
@@ -29,33 +30,30 @@ if (os.path.os.environ.get("DISPLAY") != None) and (__name__ == "__main__"):
 	from tkinter import simpledialog
 
 
-def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> tuple:
+def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> None:
 	"""Génère des situations gagnantes à partir de l'entrée donnée."""
 	"""Usage : generateTable(int:Nombre de jetons maximum par pile, int:nombre """
 	"""de piles maximum, Boolean:(optionel) Génèrer que les combinaisons où """
 	"""le nombre de tas correspond avec le nombre de tas maximum."""
-	result = []
-	number = list(range(1, nbjetons + 1))
+	number = tuple(range(1, nbjetons + 1))
 	if tas_fixe:
 		# Génère toutes les combinaisons possibles
 		temp = combinations_with_replacement(number, nbtas)
-		for i in list(temp):  # Teste les combinaisons
+		for i in temp:  # Teste les combinaisons
 			if checkCombination(list(i)):
-				result.append(i)
+				print(i)
 	else:
 		for row in range(1, nbtas + 1):
 			# Génère toutes les combinaisons possibles
 			temp = combinations_with_replacement(number, row)
-			for i in list(temp):  # Teste les combinaisons
+			for i in temp:  # Teste les combinaisons
 				if checkCombination(list(i)):
-					result.append(i)
-	return result
+					print(i)
 
 
 def checkCombination(liste: list) -> bool:
 	"""Vérifie la combinaison en transormant chaque élément de la liste"""
 	"""en son équivalent binaire, puis en faisant la somme de chaque colonne """
-	ok = True
 	# Trouve la taille de l'élément le plus long
 	maxlen = len(bin(max(liste))[2:])
 	# Convertit en binaire
@@ -66,22 +64,23 @@ def checkCombination(liste: list) -> bool:
 	for i in range(1, maxlen + 1):
 		s = 0
 		for obj in combination:
-			if i <= len(obj):
+			try:
 				s += int(obj[-i])
+			except:
+				pass
 		if s % 2 != 0:
-			ok = False
-			break
-	return ok
+			return False
+	return True
 
 
 def generateFile(nbjetons: int, nbtas: int, nom_fichier="out.txt") -> None:
 	"""Pareil que generateTable(), mais écrit la sortie dans le fichier"""
 	"""indiqué par nom_fichier. Pas d'option tas_fixe !"""
 	file = open(nom_fichier, "w")
-	number = list(range(1, nbjetons + 1))
+	number = tuple(range(1, nbjetons + 1))
 	for row in range(1, nbtas + 1):
 		temp = combinations_with_replacement(number, row)
-		for i in list(temp):
+		for i in temp:
 			if checkCombination(list(i)):
 				file.write(str(i) + "\n")
 	file.close()
@@ -96,9 +95,10 @@ def mainCLI(arg: tuple) -> None:
 		nb_tas = int(input("Nombre maximal de tas : "))
 	else:
 		nb_tas = arg[2]
-	out = generateTable(nb_jetons, nb_tas, arg[3])
-	for i in out:
-		print(i)
+	if arg[4] != "":
+		generateFile(nb_jetons, nb_tas, arg[4])
+	else:
+		out = generateTable(nb_jetons, nb_tas, arg[3])
 
 
 def launchGUI(input_arg: tuple) -> None:
@@ -189,15 +189,29 @@ def mainGUI(arg: tuple) -> str:
 		nb_tas = setInputTas()
 	else:
 		nb_tas = arg[2]
-	out = generateTable(nb_jetons, nb_tas, arg[3])
-	msg = ""
-	for i in out:
-		msg += str(i) + "\n"
-	return msg[:-1]
+
+	from io import StringIO
+
+	# rediriger stdout dans un buffer :
+	sys.stdout = StringIO()
+
+	# appel de la fonction qui remplira stdout (donc le buffer)
+	generateTable(nb_jetons, nb_tas, arg[3])
+
+	# récupérer le contenu du buffer :
+	s = sys.stdout.getvalue()
+
+	# fermer le buffer :
+	sys.stdout.close()
+
+	# rediriger stdout vers la sortie standart :
+	sys.stdout = sys.__stdout__
+
+	return s
 
 
 def findArguments() -> list:
-	arg = [False, None, None, False]
+	arg = [False, None, None, False, ""]
 	if "--help" in sys.argv or "-h" in sys.argv:
 		print(
 			f"""Utilisation : {sys.argv[0]} [OPTIONS]...
@@ -209,6 +223,9 @@ Options :
   -h,   --help    Affiche l'aide.
   -jN             Utilise N jetons au maximum par tas.
   -tN             Utilise N tas de jetons au maximum.
+  -Ffilename,   --file=filename
+		  Redirige la sortie vers filename ou vers out.txt
+		  si filename n'est pas spécifié.
   -f              Ne génère que les combinaisons où le
 		  nombre de tas correspond avec le nombre
 		  de tas maximum.
@@ -223,7 +240,7 @@ Exemples :
   {sys.argv[0]} -j28"""
 		)
 		exit()
-	elif len(sys.argv) > 5:
+	elif len(sys.argv) > 6:
 		print("Trop d'arguments")
 		raise ValueError("Trop d'arguments")
 		exit()
@@ -236,6 +253,13 @@ Exemples :
 			arg[2] = int(sys.argv[i][2:])
 		elif sys.argv[i] == "-f":
 			arg[3] = True
+		elif sys.argv[i].find("-F") == 0:
+			arg[4] = sys.argv[i][2:]
+		elif sys.argv[i].find("--file=") == 0:
+			if sys.argv[i][7:] != "":
+				arg[4] = sys.argv[i][7:]
+			else:
+				arg[4] = "out.txt"
 		else:
 			print("Ho ho ! Entrée illégale !")
 			raise ValueError("Entrée illégale !")
