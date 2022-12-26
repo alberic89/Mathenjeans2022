@@ -39,8 +39,8 @@ def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> None:
 	if tas_fixe:
 		# Génère toutes les combinaisons possibles
 		temp = combinations_with_replacement(number, nbtas)
-		for i in temp:  # Teste les combinaisons
-			if checkCombination(list(i)):
+		for i in temp:
+			if checkCombination(list(i)):  # Teste les combinaisons
 				print(i)
 	else:
 		for row in range(1, nbtas + 1):
@@ -82,7 +82,7 @@ def generateFile(nbjetons: int, nbtas: int, nom_fichier="out.txt") -> None:
 		temp = combinations_with_replacement(number, row)
 		for i in temp:
 			if checkCombination(list(i)):
-				file.write(str(i) + "\n")
+				print(i, file=file)
 	file.close()
 
 
@@ -254,7 +254,10 @@ Exemples :
 		elif sys.argv[i] == "-f":
 			arg[3] = True
 		elif sys.argv[i].find("-F") == 0:
-			arg[4] = sys.argv[i][2:]
+			if sys.argv[i][2:] != "":
+				arg[4] = sys.argv[i][2:]
+			else:
+				arg[4] = "out.txt"
 		elif sys.argv[i].find("--file=") == 0:
 			if sys.argv[i][7:] != "":
 				arg[4] = sys.argv[i][7:]
