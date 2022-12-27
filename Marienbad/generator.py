@@ -28,6 +28,7 @@ from itertools import combinations_with_replacement
 if (os.path.os.environ.get("DISPLAY") != None) and (__name__ == "__main__"):
 	from tkinter import *
 	from tkinter import simpledialog
+	from io import StringIO
 
 
 def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> None:
@@ -189,8 +190,6 @@ def mainGUI(arg: tuple) -> str:
 		nb_tas = setInputTas()
 	else:
 		nb_tas = arg[2]
-
-	from io import StringIO
 
 	# rediriger stdout dans un buffer :
 	sys.stdout = StringIO()
