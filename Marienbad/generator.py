@@ -83,7 +83,7 @@ def generateFile(nbjetons: int, nbtas: int, nom_fichier="out.txt") -> None:
 		temp = combinations_with_replacement(number, row)
 		for i in temp:
 			if checkCombination(list(i)):
-				print(i, file=file)
+				print(i[1:-1], file=file)
 	file.close()
 
 
