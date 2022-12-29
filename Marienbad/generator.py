@@ -21,8 +21,9 @@
 #  MA 02110-1301, USA.
 #
 
-import os, sys
+import os, sys, time
 from itertools import combinations_with_replacement
+
 
 # Si on dispose d'un affichage, on charge le module tkinter
 if (os.path.os.environ.get("DISPLAY") != None) and (__name__ == "__main__"):
@@ -30,12 +31,16 @@ if (os.path.os.environ.get("DISPLAY") != None) and (__name__ == "__main__"):
 	from tkinter import simpledialog
 	from io import StringIO
 
+	ROOT = Tk()
+	exetime = DoubleVar()
 
-def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> None:
+
+def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> float:
 	"""Génère des situations gagnantes à partir de l'entrée donnée."""
 	"""Usage : generateTable(int:Nombre de jetons maximum par pile, int:nombre """
 	"""de piles maximum, Boolean:(optionel) Génèrer que les combinaisons où """
 	"""le nombre de tas correspond avec le nombre de tas maximum."""
+	st = time.process_time()
 	number = tuple(range(1, nbjetons + 1))
 	if tas_fixe:
 		# Génère toutes les combinaisons possibles
@@ -50,6 +55,8 @@ def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> None:
 			for i in temp:  # Teste les combinaisons
 				if checkCombination(list(i)):
 					print(i)
+	et = time.process_time()
+	return et - st
 
 
 def checkCombination(liste: list) -> bool:
@@ -99,17 +106,21 @@ def mainCLI(arg: tuple) -> None:
 	if arg[4] != "":
 		generateFile(nb_jetons, nb_tas, arg[4])
 	else:
-		out = generateTable(nb_jetons, nb_tas, arg[3])
+		exetime = generateTable(nb_jetons, nb_tas, arg[3])
+		print("CPU Execution time:", exetime, " seconds")
 
 
 def launchGUI(input_arg: tuple) -> None:
-	ROOT = Tk()
+	global ROOT
 	ROOT.title("Marienbad Generator")
 	window_width = 660
-	window_height = 495
+	window_height = 510
 
 	tas_fixe = BooleanVar()
 	tas_fixe.set(input_arg[3])
+
+	global exetime
+	exetime.set(0.0)
 
 	# get the screen dimension
 	screen_width = ROOT.winfo_screenwidth()
@@ -156,11 +167,13 @@ def launchGUI(input_arg: tuple) -> None:
 					)
 				),
 			),
+			timer.config(text=f"CPU Execution time: {exetime.get()} seconds"),
 		],
 	)
 	result = Text(ROOT)
 	s = Scrollbar(ROOT, orient=VERTICAL, command=result.yview)
 	result["yscrollcommand"] = s.set
+	timer = Label(ROOT, text=f"CPU Execution time: {exetime.get()} seconds")
 
 	jetons_lbl.grid(column=0, row=0, sticky=(E), pady=5)
 	jetons_spin.grid(column=1, row=0, sticky=(W))
@@ -170,6 +183,7 @@ def launchGUI(input_arg: tuple) -> None:
 	button.grid(column=1, row=2, pady=5, sticky=(W))
 	result.grid(column=0, row=3, columnspan=2, sticky=(N, W, E, S))
 	s.grid(column=3, row=3, sticky=(N, S))
+	timer.grid(column=0, row=4, sticky=(W))
 
 	if input_arg[1] != None:
 		jetons_spin.delete("0", "end")
@@ -195,7 +209,8 @@ def mainGUI(arg: tuple) -> str:
 	sys.stdout = StringIO()
 
 	# appel de la fonction qui remplira stdout (donc le buffer)
-	generateTable(nb_jetons, nb_tas, arg[3])
+	global exetime
+	exetime.set(generateTable(nb_jetons, nb_tas, arg[3]))
 
 	# récupérer le contenu du buffer :
 	s = sys.stdout.getvalue()
