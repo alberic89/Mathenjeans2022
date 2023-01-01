@@ -7,7 +7,7 @@
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
+#  the Free Software Foundation; either version 3 of the License, or
 #  (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
@@ -26,28 +26,26 @@ from itertools import combinations_with_replacement
 
 
 # Si on dispose d'un affichage, on charge le module tkinter
-if (os.path.os.environ.get("DISPLAY") != None) and (__name__ == "__main__"):
+if os.path.os.environ.get("DISPLAY") != None:
 	from tkinter import *
-	from tkinter import simpledialog
 	from io import StringIO
 
-	ROOT = Tk()
-	exetime = DoubleVar()
 
-
-def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> float:
+def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> (float, int):
 	"""Génère des situations gagnantes à partir de l'entrée donnée."""
 	"""Usage : generateTable(int:Nombre de jetons maximum par pile, int:nombre """
 	"""de piles maximum, Boolean:(optionel) Génèrer que les combinaisons où """
 	"""le nombre de tas correspond avec le nombre de tas maximum."""
 	st = time.process_time()
 	number = tuple(range(1, nbjetons + 1))
+	total = 0
 	if tas_fixe:
 		# Génère toutes les combinaisons possibles
 		temp = combinations_with_replacement(number, nbtas)
 		for i in temp:
 			if checkCombination(list(i)):  # Teste les combinaisons
 				print(i)
+				total += 1
 	else:
 		for row in range(1, nbtas + 1):
 			# Génère toutes les combinaisons possibles
@@ -55,8 +53,9 @@ def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> float:
 			for i in temp:  # Teste les combinaisons
 				if checkCombination(list(i)):
 					print(i)
+					total += 1
 	et = time.process_time()
-	return et - st
+	return et - st, total
 
 
 def checkCombination(liste: list) -> bool:
@@ -81,9 +80,10 @@ def checkCombination(liste: list) -> bool:
 	return True
 
 
-def generateFile(nbjetons: int, nbtas: int, nom_fichier="out.txt") -> None:
+def generateFile(nbjetons: int, nbtas: int, nom_fichier="out.txt") -> int:
 	"""Pareil que generateTable(), mais écrit la sortie dans le fichier"""
 	"""indiqué par nom_fichier. Pas d'option tas_fixe !"""
+	total = 0
 	file = open(nom_fichier, "w")
 	number = tuple(range(1, nbjetons + 1))
 	for row in range(1, nbtas + 1):
@@ -91,7 +91,9 @@ def generateFile(nbjetons: int, nbtas: int, nom_fichier="out.txt") -> None:
 		for i in temp:
 			if checkCombination(list(i)):
 				print(str(i)[1:-1], file=file)
+				total += 1
 	file.close()
+	return total
 
 
 def mainCLI(arg: tuple) -> None:
@@ -106,12 +108,15 @@ def mainCLI(arg: tuple) -> None:
 	if arg[4] != "":
 		generateFile(nb_jetons, nb_tas, arg[4])
 	else:
-		exetime = generateTable(nb_jetons, nb_tas, arg[3])
-		print("CPU Execution time:", exetime, " seconds")
+		out = generateTable(nb_jetons, nb_tas, arg[3])
+		print("CPU Execution time : ", out[0], " seconds")
+		print("Nombre de combinaisons trouvées : ", out[1])
 
 
 def launchGUI(input_arg: tuple) -> None:
-	global ROOT
+	ROOT = Tk()
+	exetime = DoubleVar()
+	nbcombin = IntVar()
 	ROOT.title("Marienbad Generator")
 	window_width = 660
 	window_height = 510
@@ -119,8 +124,8 @@ def launchGUI(input_arg: tuple) -> None:
 	tas_fixe = BooleanVar()
 	tas_fixe.set(input_arg[3])
 
-	global exetime
-	exetime.set(0.0)
+	exetime.set(0)
+	nbcombin.set(0)
 
 	# get the screen dimension
 	screen_width = ROOT.winfo_screenwidth()
@@ -163,17 +168,23 @@ def launchGUI(input_arg: tuple) -> None:
 						False,
 						int(jetons_spin.get()),
 						int(tas_spin.get()),
-						tas_fixe.get(),
-					)
+						tas_fixe.get()
+					),
+					exetime,
+					nbcombin,
+
+
 				),
 			),
 			timer.config(text=f"CPU Execution time: {exetime.get()} seconds"),
+			counter.config(text=f"{nbcombin.get()} combinaisons trouvées."),
 		],
 	)
 	result = Text(ROOT)
 	s = Scrollbar(ROOT, orient=VERTICAL, command=result.yview)
 	result["yscrollcommand"] = s.set
 	timer = Label(ROOT, text=f"CPU Execution time: {exetime.get()} seconds")
+	counter = Label(ROOT, text=f"{nbcombin.get()} combinaisons trouvées.")
 
 	jetons_lbl.grid(column=0, row=0, sticky=(E), pady=5)
 	jetons_spin.grid(column=1, row=0, sticky=(W))
@@ -182,8 +193,9 @@ def launchGUI(input_arg: tuple) -> None:
 	fixe_check.grid(column=0, row=2)
 	button.grid(column=1, row=2, pady=5, sticky=(W))
 	result.grid(column=0, row=3, columnspan=2, sticky=(N, W, E, S))
-	s.grid(column=3, row=3, sticky=(N, S))
+	s.grid(column=2, row=3, sticky=(N, S))
 	timer.grid(column=0, row=4, sticky=(W))
+	counter.grid(column=1, row=4, sticky=(E))
 
 	if input_arg[1] != None:
 		jetons_spin.delete("0", "end")
@@ -192,10 +204,10 @@ def launchGUI(input_arg: tuple) -> None:
 		tas_spin.delete("0", "end")
 		tas_spin.insert("0", input_arg[2])
 
-	mainloop()
+	ROOT.mainloop()
 
 
-def mainGUI(arg: tuple) -> str:
+def mainGUI(arg: tuple, exetime,nbcombin) -> str:
 	if arg[1] == None:
 		nb_jetons = setInputJetons()
 	else:
@@ -209,8 +221,9 @@ def mainGUI(arg: tuple) -> str:
 	sys.stdout = StringIO()
 
 	# appel de la fonction qui remplira stdout (donc le buffer)
-	global exetime
-	exetime.set(generateTable(nb_jetons, nb_tas, arg[3]))
+	out = generateTable(nb_jetons, nb_tas, arg[3])
+	exetime.set(float(str(out[0])[:6]))
+	nbcombin.set(out[1])
 
 	# récupérer le contenu du buffer :
 	s = sys.stdout.getvalue()
