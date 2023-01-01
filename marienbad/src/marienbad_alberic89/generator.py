@@ -168,12 +168,10 @@ def launchGUI(input_arg: tuple) -> None:
 						False,
 						int(jetons_spin.get()),
 						int(tas_spin.get()),
-						tas_fixe.get()
+						tas_fixe.get(),
 					),
 					exetime,
 					nbcombin,
-
-
 				),
 			),
 			timer.config(text=f"CPU Execution time: {exetime.get()} seconds"),
@@ -207,7 +205,7 @@ def launchGUI(input_arg: tuple) -> None:
 	ROOT.mainloop()
 
 
-def mainGUI(arg: tuple, exetime,nbcombin) -> str:
+def mainGUI(arg: tuple, exetime: DoubleVar, nbcombin: IntVar) -> str:
 	if arg[1] == None:
 		nb_jetons = setInputJetons()
 	else:
@@ -247,19 +245,19 @@ avec une limite du nombre de jetons par tas et de tas.
 
 Options :
 
-  -h,   --help    Affiche l'aide.
-  -jN             Utilise N jetons au maximum par tas.
-  -tN             Utilise N tas de jetons au maximum.
-  -Ffilename,   --file=filename
-		  Redirige la sortie vers filename ou vers out.txt
-		  si filename n'est pas spécifié.
-  -f              Ne génère que les combinaisons où le
-		  nombre de tas correspond avec le nombre
-		  de tas maximum.
-	--no-gui  Lance la version en ligne de commande.
-		  Par défaut, si une interface graphique
-		  est disponible, elle sera utilisée.
-		  Cette option force l'usage du terminal.
+|  -h,   --help    Affiche l'aide.
+|  -jN             Utilise N jetons au maximum par tas.
+|  -tN             Utilise N tas de jetons au maximum.
+|  -Ffilename,   --file=filename
+|                  Redirige la sortie vers filename ou vers out.txt
+|                  si filename n'est pas spécifié.
+|  -f              Ne génère que les combinaisons où le
+|                  nombre de tas correspond avec le nombre
+|                  de tas maximum.
+|	--no-gui  Lance la version en ligne de commande.
+|                  Par défaut, si une interface graphique
+|                  est disponible, elle sera utilisée.
+|                  Cette option force l'usage du terminal.
 
 Exemples :
   {sys.argv[0]} -j5 -t7 -f
