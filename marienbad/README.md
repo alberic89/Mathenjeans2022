@@ -2,6 +2,8 @@
 
 A simple toolsuite for help you to win at [Marienbad](https://fr.wikipedia.org/wiki/Jeu_de_Marienbad) game, a [Nim](https://en.wikipedia.org/wiki/Nim) game.
 
+It is recommended to use the [PyPy](https://www.pypy.org/) interpreter instead of the CPython standart.
+
 ## Generator
 
 Pour utiliser cet outil, entrez la commande :
