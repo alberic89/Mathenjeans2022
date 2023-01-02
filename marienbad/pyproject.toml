@@ -4,7 +4,7 @@ version = "0.1"
 authors = [
   { name="alberic89", email="alberic89@gmx.com" },
 ]
-description = "A tool for win at Marienbad (Nim) game."
+description = "A toolsuite for win at Marienbad (Nim) game."
 keywords = ["Marienbad","Nim"]
 readme = "README.md"
 requires-python = ">=3"
