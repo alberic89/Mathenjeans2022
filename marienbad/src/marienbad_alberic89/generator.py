@@ -34,7 +34,7 @@ if os.path.os.environ.get("DISPLAY") != None:
 
 
 def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> (float, int):
-	"""Génère des situations gagnantes à partir de l'entrée donnée."""
+	"""Génère et imprime des situations gagnantes à partir de l'entrée donnée."""
 	"""Usage : generateTable(int:Nombre de jetons maximum par pile, int:nombre """
 	"""de piles maximum, Boolean:(optionel) Génèrer que les combinaisons où """
 	"""le nombre de tas correspond avec le nombre de tas maximum."""
@@ -300,9 +300,9 @@ Exemples :
 	return arg
 
 
-def main() -> None:
+def main(gui=True) -> None:
 	input_arg = tuple(findArguments())
-	if os.path.os.environ.get("DISPLAY") == None or input_arg[0] == True:
+	if os.path.os.environ.get("DISPLAY") == None or input_arg[0] == True or gui==False:
 		mainCLI(input_arg)
 	else:
 		launchGUI(input_arg)
