@@ -21,7 +21,7 @@
 #  MA 02110-1301, USA.
 #
 
-version = "0.1"
+version = "1.0"
 
 import os, sys, time
 from itertools import combinations_with_replacement
@@ -293,6 +293,7 @@ Exemples :
 				arg[4] = "out.txt"
 		elif sys.argv[i] == "-v" or sys.argv[i] == "-V" or sys.argv[i] == "--version":
 			print(version)
+			exit()
 		else:
 			print("Ho ho ! Entrée illégale !")
 			raise ValueError("Entrée illégale !")
