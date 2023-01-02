@@ -21,6 +21,8 @@
 #  MA 02110-1301, USA.
 #
 
+version = "0.1"
+
 import os, sys, time
 from itertools import combinations_with_replacement
 
@@ -245,7 +247,7 @@ avec une limite du nombre de jetons par tas et de tas.
 
 Options :
 
-|  -h,   --help    Affiche l'aide.
+|  -h,  --help     Affiche l'aide.
 |  -jN             Utilise N jetons au maximum par tas.
 |  -tN             Utilise N tas de jetons au maximum.
 |  -Ffilename,   --file=filename
@@ -254,10 +256,11 @@ Options :
 |  -f              Ne génère que les combinaisons où le
 |                  nombre de tas correspond avec le nombre
 |                  de tas maximum.
-|	--no-gui  Lance la version en ligne de commande.
+|       --no-gui   Lance la version en ligne de commande.
 |                  Par défaut, si une interface graphique
 |                  est disponible, elle sera utilisée.
 |                  Cette option force l'usage du terminal.
+|  -v,  --version  Affiche le numéro de version.
 
 Exemples :
   {sys.argv[0]} -j5 -t7 -f
@@ -265,7 +268,7 @@ Exemples :
   {sys.argv[0]} -j28"""
 		)
 		exit()
-	elif len(sys.argv) > 6:
+	elif len(sys.argv) > 7:
 		print("Trop d'arguments")
 		raise ValueError("Trop d'arguments")
 		exit()
@@ -288,6 +291,8 @@ Exemples :
 				arg[4] = sys.argv[i][7:]
 			else:
 				arg[4] = "out.txt"
+		elif sys.argv[i] == "-v" or sys.argv[i] == "-V" or sys.argv[i] == "--version":
+			print(version)
 		else:
 			print("Ho ho ! Entrée illégale !")
 			raise ValueError("Entrée illégale !")
