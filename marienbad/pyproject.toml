@@ -1,14 +1,11 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
 [project]
 name = "marienbad_alberic89"
-version = "0.1"
+version = "0.1.1"
 authors = [
   { name="alberic89", email="alberic89@gmx.com" },
 ]
-description = "A tool for win at Marienbad game."
-keywords = ["Marienbad"]
+description = "A tool for win at Marienbad (Nim) game."
+keywords = ["Marienbad","Nim"]
 readme = "README.md"
 requires-python = ">=3"
 classifiers = [
@@ -16,10 +13,11 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
     "Topic :: Games/Entertainment",
+    "Natural Language :: French",
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/alberic89/Mathenjeans2022/tree/main/Marienbad"
+"Homepage" = "https://github.com/alberic89/Mathenjeans2022/tree/main/marienbad"
 "Bug Tracker" = "https://github.com/alberic89/Mathenjeans2022/issues"
 
 [project.scripts]
