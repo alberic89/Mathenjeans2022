@@ -1,5 +1,5 @@
 [project]
-name = "marienbad_alberic89"
+name = "marienbad"
 version = "0.1"
 authors = [
   { name="alberic89", email="alberic89@gmx.com" },
@@ -21,7 +21,7 @@ classifiers = [
 "Bug Tracker" = "https://github.com/alberic89/Mathenjeans2022/issues"
 
 [project.scripts]
-marienbad-generator = "marienbad_alberic89.generator:main"
+marienbad-generator = "marienbad.generator:main"
 
 [project.gui-scripts]
-marienbad-generator = "marienbad_alberic89.generator:main"
+marienbad-generator = "marienbad.generator:main"
