@@ -21,21 +21,23 @@
 #  MA 02110-1301, USA.
 #
 
+version = "0.1"
+
 from marienbad.generator import checkCombination
 
 
 def findSolution(situation: tuple) -> (tuple or bool):
-	'''Retourne UNE des solutions possible à cette situation'''
-	'''Usage : findSolution(situation: tuple)'''
-	'''Retourne False si pas de solution, ou une solution sous forme de tuple.'''
-	'''Nécessite le module marienbad.generator pour fonctionner.'''
+	"""Retourne UNE des solutions possible à cette situation"""
+	"""Usage : findSolution(situation: tuple)"""
+	"""Retourne False si pas de solution, ou une solution sous forme de tuple."""
+	"""Nécessite le module marienbad.generator pour fonctionner."""
 	# Si la situation est gagnante, pas de solutions.
 	if checkCombination(situation) == True:
 		return False
 	# Pour chaque tas on enlève tour à tour un jetons à la fois, et on teste.
 	for tas in range(len(situation)):
 		s = list(situation)
-		while s[tas] > 0 :
+		while s[tas] > 0:
 			s[tas] -= 1
 			# Si la combinaison est gagnante, on la propose.
 			if checkCombination(s) == True:
