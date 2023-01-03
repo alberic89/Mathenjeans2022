@@ -21,7 +21,7 @@
 #  MA 02110-1301, USA.
 #
 
-version = "1.0"
+version = "1.1"
 
 import os, sys, time
 from itertools import combinations_with_replacement
@@ -45,7 +45,7 @@ def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> (float, int):
 		# Génère toutes les combinaisons possibles
 		temp = combinations_with_replacement(number, nbtas)
 		for i in temp:
-			if checkCombination(list(i)):  # Teste les combinaisons
+			if checkCombination(i):  # Teste les combinaisons
 				print(i)
 				total += 1
 	else:
@@ -53,33 +53,21 @@ def generateTable(nbjetons: int, nbtas: int, tas_fixe=False) -> (float, int):
 			# Génère toutes les combinaisons possibles
 			temp = combinations_with_replacement(number, row)
 			for i in temp:  # Teste les combinaisons
-				if checkCombination(list(i)):
+				if checkCombination(i):
 					print(i)
 					total += 1
 	et = time.process_time()
 	return et - st, total
 
 
-def checkCombination(liste: list) -> bool:
-	"""Vérifie la combinaison en transormant chaque élément de la liste"""
-	"""en son équivalent binaire, puis en faisant la somme de chaque colonne """
-	# Trouve la taille de l'élément le plus long
-	maxlen = len(bin(max(liste))[2:])
-	# Convertit en binaire
-	for i in range(len(liste)):
-		liste[i] = bin(liste[i])[2:]
-	combination = tuple(liste)
-	# Fait la somme de chaque colonne
-	for i in range(1, maxlen + 1):
-		s = 0
-		for obj in combination:
-			try:
-				s += int(obj[-i])
-			except:
-				pass
-		if s % 2 != 0:
-			return False
-	return True
+def checkCombination(combination: tuple) -> bool:
+	"""Vérifie la combinaison en calculant la somme xor du tuple."""
+	s = 0
+	for i in combination:
+		s ^= i
+	if s == 0:
+		return True
+	return False
 
 
 def generateFile(nbjetons: int, nbtas: int, nom_fichier="out.txt") -> int:
@@ -302,7 +290,11 @@ Exemples :
 
 def main(gui=True) -> None:
 	input_arg = tuple(findArguments())
-	if os.path.os.environ.get("DISPLAY") == None or input_arg[0] == True or gui==False:
+	if (
+		os.path.os.environ.get("DISPLAY") == None
+		or input_arg[0] == True
+		or gui == False
+	):
 		mainCLI(input_arg)
 	else:
 		launchGUI(input_arg)
