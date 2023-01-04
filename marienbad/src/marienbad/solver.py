@@ -22,7 +22,7 @@
 #
 
 version = "0.1"
-
+import sys
 from marienbad.generator import checkCombination
 
 
@@ -43,3 +43,78 @@ def findSolution(situation: tuple) -> (tuple or bool):
 			if checkCombination(s) == True:
 				return tuple(s)
 	return False
+
+
+def findAllSolution(situation: tuple) -> (tuple or bool):
+	"""Retourne TOUTES les solutions possible à cette situation"""
+	"""Usage : findAllSolution(situation: tuple)"""
+	"""Retourne False si pas de solution, ou les solutions sous forme de tuple de tuple."""
+	"""Nécessite le module marienbad.generator pour fonctionner."""
+	# Si la situation est gagnante, pas de solutions.
+	if checkCombination(situation) == True:
+		return False
+	allsolutions = []
+	# Pour chaque tas on enlève tour à tour un jetons à la fois, et on teste.
+	for tas in range(len(situation)):
+		s = list(situation)
+		while s[tas] > 0:
+			s[tas] -= 1
+			# Si la combinaison est gagnante, on la propose.
+			if checkCombination(s) == True:
+				allsolutions.append(tuple(s))
+	if allsolutions != []:
+		return tuple(allsolutions)
+	return False
+
+
+def findArguments() -> list:
+	arg = [False, False, False, None]
+	if "--help" in sys.argv or "-h" in sys.argv:
+		print(
+			f"""Utilisation : {sys.argv[0]} [OPTIONS]... "C O M B I N A I S O N"
+Trouve une ou plusieurs solutions à une situation du jeu de Marienbad.
+
+Options :
+
+|  -h,  --help     Affiche l'aide.
+|  -a,  --all      Trouve toutes les solutions.
+|  -o,  --one      Trouve une seule solution. Option par défaut.
+|       --no-gui   Lance la version en ligne de commande.
+|                  Par défaut, si une interface graphique
+|                  est disponible, elle sera utilisée.
+|                  Cette option force l'usage du terminal.
+|  -v,  --version  Affiche le numéro de version.
+
+Exemples :
+  {sys.argv[0]} --all --no-gui "1 3 5 7"
+  {sys.argv[0]} -v
+  {sys.argv[0]} --one "55 41 87 98 66 355 4\""""
+		)
+		exit()
+	elif "-v" in sys.argv or "--version" in sys.argv:
+		print(version)
+		exit()
+	elif len(sys.argv) > 3:
+		print("Trop d'arguments")
+		raise ValueError("Trop d'arguments")
+		exit()
+	for i in range(1, len(sys.argv) - 1):
+		if sys.argv[i] == "--no-gui":
+			arg[0] = True
+		elif sys.argv[i] == "-a" or sys.argv[i] == "--all":
+			arg[1] = True
+		elif sys.argv[i] == "-o" or sys.argv[i] == "--one":
+			arg[2] = True
+		else:
+			print("Ho ho ! Entrée illégale !")
+			raise ValueError("Entrée illégale !")
+	try:
+		arg[3] = tuple(sys.argv[len(sys.argv)].split())
+	except:
+		print(
+			'Impossible d\'interpréter la combinaison.\n Utilisez le format : "1 36 559 7".'
+		)
+		raise ValueError(
+			'Impossible d\'interpréter la combinaison.\n Utilisez le format : "1 36 559 7".'
+		)
+	return arg
