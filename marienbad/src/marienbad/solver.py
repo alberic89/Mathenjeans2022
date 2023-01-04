@@ -45,9 +45,9 @@ def findSolution(situation: tuple) -> (tuple or bool):
 	return False
 
 
-def findAllSolution(situation: tuple) -> (tuple or bool):
+def findAllSolutions(situation: tuple) -> (tuple or bool):
 	"""Retourne TOUTES les solutions possible à cette situation"""
-	"""Usage : findAllSolution(situation: tuple)"""
+	"""Usage : findAllSolutions(situation: tuple)"""
 	"""Retourne False si pas de solution, ou les solutions sous forme de tuple de tuple."""
 	"""Nécessite le module marienbad.generator pour fonctionner."""
 	# Si la situation est gagnante, pas de solutions.
@@ -68,7 +68,11 @@ def findAllSolution(situation: tuple) -> (tuple or bool):
 
 
 def findArguments() -> list:
-	arg = [False, False, False, None]
+	arg = [False, False, None]
+	if len(sys.argv) == 1 :
+		tmp = tuple(input("Entrez la situation :").split())
+		arg[2] = tuple([int(i) for i in tmp])
+		return arg
 	if "--help" in sys.argv or "-h" in sys.argv:
 		print(
 			f"""Utilisation : {sys.argv[0]} [OPTIONS]... "C O M B I N A I S O N"
@@ -104,12 +108,12 @@ Exemples :
 		elif sys.argv[i] == "-a" or sys.argv[i] == "--all":
 			arg[1] = True
 		elif sys.argv[i] == "-o" or sys.argv[i] == "--one":
-			arg[2] = True
+			arg[1] = False
 		else:
 			print("Ho ho ! Entrée illégale !")
 			raise ValueError("Entrée illégale !")
 	try:
-		arg[3] = tuple(sys.argv[len(sys.argv)].split())
+		arg[2] = tuple(sys.argv[len(sys.argv)].split())
 	except:
 		print(
 			'Impossible d\'interpréter la combinaison.\n Utilisez le format : "1 36 559 7".'
@@ -118,3 +122,19 @@ Exemples :
 			'Impossible d\'interpréter la combinaison.\n Utilisez le format : "1 36 559 7".'
 		)
 	return arg
+
+
+def mainCLI(situation: tuple, allsolutions=False) -> None:
+	if allsolutions:
+		print(findAllSolutions(situation))
+	else:
+		print(findSolution(situation))
+
+
+def main():
+	args = findArguments()
+	mainCLI(args[2], args[1])
+
+
+if __name__ == "__main__":
+	main()
