@@ -279,7 +279,7 @@ Exemples :
 				arg[4] = sys.argv[i][7:]
 			else:
 				arg[4] = "out.txt"
-		elif sys.argv[i] == "-v" or sys.argv[i] == "-V" or sys.argv[i] == "--version":
+		elif sys.argv[i] == "-v" or sys.argv[i] == "--version":
 			print(version)
 			exit()
 		else:
