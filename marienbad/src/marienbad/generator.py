@@ -105,6 +105,15 @@ def mainCLI(arg: tuple) -> None:
 
 def launchGUI(input_arg: tuple) -> None:
 	ROOT = Tk()
+	ROOT.columnconfigure(0, weight=100, minsize=100)
+	ROOT.rowconfigure(0, weight=3, minsize=20)
+	ROOT.columnconfigure(1, weight=100, minsize=100)
+	ROOT.rowconfigure(1, weight=3, minsize=20)
+	ROOT.columnconfigure(2, weight=1, minsize=5)
+	ROOT.rowconfigure(2, weight=5, minsize=20)
+	ROOT.rowconfigure(3, weight=30, minsize=100)
+	ROOT.rowconfigure(4, weight=1, minsize=10)
+
 	exetime = DoubleVar()
 	nbcombin = IntVar()
 	ROOT.title("Marienbad Generator")
@@ -178,7 +187,7 @@ def launchGUI(input_arg: tuple) -> None:
 	jetons_spin.grid(column=1, row=0, sticky=(W))
 	tas_lbl.grid(column=0, row=1, sticky=(E), pady=5)
 	tas_spin.grid(column=1, row=1, sticky=(W))
-	fixe_check.grid(column=0, row=2)
+	fixe_check.grid(column=0, row=2, padx=10, sticky=(E))
 	button.grid(column=1, row=2, pady=5, sticky=(W))
 	result.grid(column=0, row=3, columnspan=2, sticky=(N, W, E, S))
 	s.grid(column=2, row=3, sticky=(N, S))
