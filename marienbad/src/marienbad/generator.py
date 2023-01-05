@@ -21,7 +21,7 @@
 #  MA 02110-1301, USA.
 #
 
-version = "1.1"
+version = "1.2"
 
 import os, sys, time
 from itertools import combinations_with_replacement
