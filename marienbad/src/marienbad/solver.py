@@ -69,7 +69,7 @@ def findAllSolutions(situation: tuple) -> (tuple or bool):
 
 def findArguments() -> list:
 	arg = [False, False, None]
-	if len(sys.argv) == 1 :
+	if len(sys.argv) == 1:
 		tmp = tuple(input("Entrez la situation :").split())
 		arg[2] = tuple([int(i) for i in tmp])
 		return arg
