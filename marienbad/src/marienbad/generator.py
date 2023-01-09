@@ -28,7 +28,7 @@ from itertools import combinations_with_replacement
 
 
 # Si on dispose d'un affichage, on charge le module tkinter
-if os.path.os.environ.get("DISPLAY") != None:
+if os.path.os.environ.get("DISPLAY") != None or os.name == "nt":
 	from tkinter import *
 	from io import StringIO
 
@@ -299,7 +299,9 @@ Exemples :
 
 def main(gui=True) -> None:
 	input_arg = tuple(findArguments())
-	if (
+	if os.name == "nt":
+		launchGUI(input_arg)
+	elif (
 		os.path.os.environ.get("DISPLAY") == None
 		or input_arg[0] == True
 		or gui == False
