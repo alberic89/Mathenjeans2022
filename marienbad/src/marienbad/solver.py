@@ -23,7 +23,7 @@
 
 version = "0.1"
 import sys
-from marienbad.generator import checkCombination
+from generator import checkCombination
 
 
 def findSolution(situation: tuple) -> (tuple or bool):

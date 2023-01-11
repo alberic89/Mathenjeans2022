@@ -21,7 +21,7 @@
 #  MA 02110-1301, USA.
 #
 
-version = "1.2"
+version = "1.3"
 
 import os, sys, time
 from itertools import combinations_with_replacement
@@ -102,8 +102,36 @@ def mainCLI(arg: tuple) -> None:
 		print("CPU Execution time : ", out[0], " seconds")
 		print("Nombre de combinaisons trouvées : ", out[1])
 
+def findWithGUI(arg: tuple, exetime: DoubleVar, nbcombin: IntVar) -> str:
+	if arg[1] == None:
+		nb_jetons = setInputJetons()
+	else:
+		nb_jetons = arg[1]
+	if arg[2] == None:
+		nb_tas = setInputTas()
+	else:
+		nb_tas = arg[2]
 
-def launchGUI(input_arg: tuple) -> None:
+	# rediriger stdout dans un buffer :
+	sys.stdout = StringIO()
+
+	# appel de la fonction qui remplira stdout (donc le buffer)
+	out = generateTable(nb_jetons, nb_tas, arg[3])
+	exetime.set(float(str(out[0])[:6]))
+	nbcombin.set(out[1])
+
+	# récupérer le contenu du buffer :
+	s = sys.stdout.getvalue()
+
+	# fermer le buffer :
+	sys.stdout.close()
+
+	# rediriger stdout vers la sortie standart :
+	sys.stdout = sys.__stdout__
+
+	return s
+
+def mainGUI(input_arg: tuple) -> None:
 	ROOT = Tk()
 	ROOT.columnconfigure(0, weight=100, minsize=100)
 	ROOT.rowconfigure(0, weight=3, minsize=20)
@@ -162,7 +190,7 @@ def launchGUI(input_arg: tuple) -> None:
 			result.delete("1.0", "end"),
 			result.insert(
 				"1.0",
-				mainGUI(
+				findWithGUI(
 					(
 						False,
 						int(jetons_spin.get()),
@@ -204,38 +232,12 @@ def launchGUI(input_arg: tuple) -> None:
 	ROOT.mainloop()
 
 
-def mainGUI(arg: tuple, exetime: DoubleVar, nbcombin: IntVar) -> str:
-	if arg[1] == None:
-		nb_jetons = setInputJetons()
-	else:
-		nb_jetons = arg[1]
-	if arg[2] == None:
-		nb_tas = setInputTas()
-	else:
-		nb_tas = arg[2]
 
-	# rediriger stdout dans un buffer :
-	sys.stdout = StringIO()
-
-	# appel de la fonction qui remplira stdout (donc le buffer)
-	out = generateTable(nb_jetons, nb_tas, arg[3])
-	exetime.set(float(str(out[0])[:6]))
-	nbcombin.set(out[1])
-
-	# récupérer le contenu du buffer :
-	s = sys.stdout.getvalue()
-
-	# fermer le buffer :
-	sys.stdout.close()
-
-	# rediriger stdout vers la sortie standart :
-	sys.stdout = sys.__stdout__
-
-	return s
 
 
 def findArguments() -> list:
-	arg = [False, None, None, False, ""]
+	arg = [None, None, None, False, ""]
+	# [gui,nbjetons,nbtas,tas-fixe, "fichier-sortie"]
 	if "--help" in sys.argv or "-h" in sys.argv:
 		print(
 			f"""Utilisation : {sys.argv[0]} [OPTIONS]...
@@ -253,6 +255,7 @@ Options :
 |  -f              Ne génère que les combinaisons où le
 |                  nombre de tas correspond avec le nombre
 |                  de tas maximum.
+|       --gui      Force l'usage de l'interface graphique.
 |       --no-gui   Lance la version en ligne de commande.
 |                  Par défaut, si une interface graphique
 |                  est disponible, elle sera utilisée.
@@ -262,7 +265,7 @@ Options :
 Exemples :
   {sys.argv[0]} -j5 -t7 -f
   {sys.argv[0]} -t3 --no-gui -j12
-  {sys.argv[0]} -j28"""
+  {sys.argv[0]} -j28 --gui"""
 		)
 		exit()
 	elif len(sys.argv) > 7:
@@ -271,6 +274,8 @@ Exemples :
 		exit()
 	for i in range(1, len(sys.argv)):
 		if sys.argv[i] == "--no-gui":
+			arg[0] = False
+		elif sys.argv[i] == "--gui":
 			arg[0] = True
 		elif sys.argv[i].find("-j") == 0:
 			arg[1] = int(sys.argv[i][2:])
@@ -299,16 +304,19 @@ Exemples :
 
 def main(gui=True) -> None:
 	input_arg = tuple(findArguments())
-	if os.name == "nt":
-		launchGUI(input_arg)
-	elif (
-		os.path.os.environ.get("DISPLAY") == None
-		or input_arg[0] == True
-		or gui == False
-	):
+	if input_arg[0] == True:
+		mainGUI(input_arg)
+	elif input_arg[0] == False:
 		mainCLI(input_arg)
 	else:
-		launchGUI(input_arg)
+		if os.name == "nt":
+			mainGUI(input_arg)
+
+		elif os.path.os.environ.get("DISPLAY") == None:
+			mainCLI(input_arg)
+
+		else:
+			mainGUI(input_arg)
 
 
 if __name__ == "__main__":
